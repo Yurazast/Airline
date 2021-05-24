@@ -29,4 +29,13 @@ public class FlightMapper {
                 .crew(flight.getCrew().stream().map(CrewMemberMapper::toCrewMemberDto).collect(Collectors.toSet()))
                 .build();
     }
+
+    public static Flight update(Flight oldFlight, FlightDto newFlight) {
+        oldFlight.setDeparturePlace(newFlight.getDeparturePlace());
+        oldFlight.setArrivalPlace(newFlight.getArrivalPlace());
+        oldFlight.setAirplane(newFlight.getAirplane());
+        oldFlight.setDepartureTime(newFlight.getDepartureTime());
+        oldFlight.setArrivalTime(newFlight.getArrivalTime());
+        return oldFlight;
+    }
 }

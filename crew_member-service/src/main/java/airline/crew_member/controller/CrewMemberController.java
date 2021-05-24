@@ -2,10 +2,6 @@ package airline.crew_member.controller;
 
 import airline.crew_member.dto.CrewMemberDto;
 import airline.crew_member.dto.FlightDto;
-import airline.crew_member.mapper.CrewMemberMapper;
-import airline.crew_member.mapper.FlightMapper;
-import airline.crew_member.model.CrewMember;
-import airline.crew_member.model.Flight;
 import airline.crew_member.service.CrewMemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -13,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/crew")
@@ -23,26 +18,26 @@ public class CrewMemberController {
 
     @GetMapping
     public ResponseEntity<List<CrewMemberDto>> getAllCrewMembers() {
-        List<CrewMember> crewMembers = crewMemberService.getAll();
-        return new ResponseEntity<>(crewMembers.stream().map(CrewMemberMapper::toCrewMemberDto).collect(Collectors.toList()), HttpStatus.OK);
+        List<CrewMemberDto> crewMembers = crewMemberService.getAll();
+        return new ResponseEntity<>(crewMembers, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<CrewMemberDto> getCrewMemberById(@PathVariable Integer id) {
-        CrewMember crewMember = crewMemberService.getCrewMemberById(id);
-        return new ResponseEntity<>(CrewMemberMapper.toCrewMemberDto(crewMember), HttpStatus.OK);
+        CrewMemberDto crewMemberById = crewMemberService.getCrewMemberById(id);
+        return new ResponseEntity<>(crewMemberById, HttpStatus.OK);
     }
 
     @PostMapping("/new")
     public ResponseEntity<CrewMemberDto> saveCrewMember(@RequestBody CrewMemberDto crewMemberDto) {
-        CrewMember savedCrewMember = crewMemberService.addCrewMember(CrewMemberMapper.toCrewMember(crewMemberDto));
-        return new ResponseEntity<>(CrewMemberMapper.toCrewMemberDto(savedCrewMember), HttpStatus.CREATED);
+        CrewMemberDto savedCrewMember = crewMemberService.saveCrewMember(crewMemberDto);
+        return new ResponseEntity<>(savedCrewMember, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<CrewMemberDto> updateCrewMember(@PathVariable Integer id, @RequestBody CrewMemberDto crewMemberDto) {
-        CrewMember updatedCrewMember = crewMemberService.editCrewMember(id, CrewMemberMapper.toCrewMember(crewMemberDto));
-        return new ResponseEntity<>(CrewMemberMapper.toCrewMemberDto(updatedCrewMember), HttpStatus.OK);
+        CrewMemberDto updatedCrewMember = crewMemberService.updateCrewMember(id, crewMemberDto);
+        return new ResponseEntity<>(updatedCrewMember, HttpStatus.OK);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -51,15 +46,15 @@ public class CrewMemberController {
         crewMemberService.deleteCrewMember(id);
     }
 
-    @PostMapping("/{crewMemberId}/flight/{flightId}/add")
+    @PostMapping("/{crewMemberId}/flights/{flightId}/add")
     public ResponseEntity<FlightDto> addCrewMemberToFlight(@PathVariable Integer crewMemberId, @PathVariable Integer flightId) {
-        Flight flight = crewMemberService.addCrewMemberToFlight(crewMemberId, flightId);
-        return new ResponseEntity<>(FlightMapper.toFlightDto(flight), HttpStatus.OK);
+        FlightDto alteredFlight = crewMemberService.addCrewMemberToFlight(crewMemberId, flightId);
+        return new ResponseEntity<>(alteredFlight, HttpStatus.OK);
     }
 
-    @DeleteMapping("/{crewMemberId}/flight/{flightId}/remove")
+    @DeleteMapping("/{crewMemberId}/flights/{flightId}/remove")
     public ResponseEntity<FlightDto> removeCrewMemberFromFlight(@PathVariable Integer crewMemberId, @PathVariable Integer flightId) {
-        Flight flight = crewMemberService.removeCrewMemberFromFlight(crewMemberId, flightId);
-        return new ResponseEntity<>(FlightMapper.toFlightDto(flight), HttpStatus.OK);
+        FlightDto alteredFlight = crewMemberService.removeCrewMemberFromFlight(crewMemberId, flightId);
+        return new ResponseEntity<>(alteredFlight, HttpStatus.OK);
     }
 }

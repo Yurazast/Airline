@@ -1,8 +1,6 @@
 package airline.flight.controller;
 
 import airline.flight.dto.FlightDto;
-import airline.flight.mapper.FlightMapper;
-import airline.flight.model.Flight;
 import airline.flight.service.FlightService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -10,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/flights")
@@ -20,26 +17,26 @@ public class FlightController {
 
     @GetMapping
     public ResponseEntity<List<FlightDto>> getAllFlights() {
-        List<Flight> flights = flightService.getAll();
-        return new ResponseEntity<>(flights.stream().map(FlightMapper::toFlightDto).collect(Collectors.toList()), HttpStatus.OK);
+        List<FlightDto> flights = flightService.getAll();
+        return new ResponseEntity<>(flights, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<FlightDto> getFlightById(@PathVariable Integer id) {
-        Flight flight = flightService.getFlightById(id);
-        return new ResponseEntity<>(FlightMapper.toFlightDto(flight), HttpStatus.OK);
+        FlightDto flightById = flightService.getFlightById(id);
+        return new ResponseEntity<>(flightById, HttpStatus.OK);
     }
 
     @PostMapping("/new")
     public ResponseEntity<FlightDto> saveFlight(@RequestBody FlightDto flightDto) {
-        Flight savedFlight = flightService.addFlight(FlightMapper.toFlight(flightDto));
-        return new ResponseEntity<>(FlightMapper.toFlightDto(savedFlight), HttpStatus.CREATED);
+        FlightDto savedFlight = flightService.saveFlight(flightDto);
+        return new ResponseEntity<>(savedFlight, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<FlightDto> updateFlight(@PathVariable Integer id, @RequestBody FlightDto flightDto) {
-        Flight updatedFlight = flightService.editFlight(id, FlightMapper.toFlight(flightDto));
-        return new ResponseEntity<>(FlightMapper.toFlightDto(updatedFlight), HttpStatus.OK);
+        FlightDto updatedFlight = flightService.updateFlight(id, flightDto);
+        return new ResponseEntity<>(updatedFlight, HttpStatus.OK);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)

@@ -1,8 +1,12 @@
 package airline.crew_member.service;
 
+import airline.crew_member.dto.CrewMemberDto;
+import airline.crew_member.dto.FlightDto;
 import airline.crew_member.exception.CrewMemberIsAlreadyAssignedToFlightException;
 import airline.crew_member.exception.CrewMemberNotFoundException;
 import airline.crew_member.exception.FlightNotFoundException;
+import airline.crew_member.mapper.CrewMemberMapper;
+import airline.crew_member.mapper.FlightMapper;
 import airline.crew_member.model.CrewMember;
 import airline.crew_member.model.Flight;
 import airline.crew_member.repo.CrewMemberRepository;
@@ -13,69 +17,70 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class CrewMemberService {
-    private final CrewMemberRepository crewMemberRepo;
+    private final CrewMemberRepository crewMemberRepository;
     private final RestTemplate restTemplate;
 
-    public List<CrewMember> getAll() {
-        return crewMemberRepo.findAll();
+    public List<CrewMemberDto> getAll() {
+        return crewMemberRepository.findAll().stream().map(CrewMemberMapper::toCrewMemberDto).collect(Collectors.toList());
     }
 
-    public CrewMember getCrewMemberById(Integer id) {
-        return crewMemberRepo.findById(id).orElseThrow(() -> new CrewMemberNotFoundException(id));
+    public CrewMemberDto getCrewMemberById(Integer id) {
+        return CrewMemberMapper.toCrewMemberDto(crewMemberRepository.findById(id).orElseThrow(() -> new CrewMemberNotFoundException(id)));
     }
 
-    public CrewMember addCrewMember(CrewMember crewMember) {
-        return crewMemberRepo.save(crewMember);
+    public CrewMemberDto saveCrewMember(CrewMemberDto crewMemberDto) {
+        CrewMember crewMemberToSave = CrewMemberMapper.toCrewMember(crewMemberDto);
+        return CrewMemberMapper.toCrewMemberDto(crewMemberRepository.save(crewMemberToSave));
     }
 
-    public CrewMember editCrewMember(Integer id, CrewMember crewMember) {
-        if (crewMemberRepo.findById(id).isEmpty()) return crewMemberRepo.save(crewMember);
-        CrewMember crewMemberToEdit = getCrewMemberById(id);
-        crewMemberToEdit.setSurname(crewMember.getSurname());
-        crewMemberToEdit.setName(crewMember.getName());
-        crewMemberToEdit.setGender(crewMember.getGender());
-        crewMemberToEdit.setRole(crewMember.getRole());
-        crewMemberToEdit.setAge(crewMember.getAge());
-        return crewMemberRepo.save(crewMemberToEdit);
+    public CrewMemberDto updateCrewMember(Integer id, CrewMemberDto crewMemberDto) {
+        if (crewMemberRepository.findById(id).isEmpty()) {
+            CrewMember crewMemberToSave = CrewMemberMapper.toCrewMember(crewMemberDto);
+            return CrewMemberMapper.toCrewMemberDto(crewMemberRepository.save(crewMemberToSave));
+        }
+        CrewMember crewMemberToUpdate = crewMemberRepository.findById(id).orElseThrow(() -> new CrewMemberNotFoundException(id));
+        CrewMember updatedCrewMember = CrewMemberMapper.update(crewMemberToUpdate, crewMemberDto);
+        return CrewMemberMapper.toCrewMemberDto(crewMemberRepository.save(updatedCrewMember));
     }
 
     public void deleteCrewMember(Integer id) {
-        CrewMember crewMember = getCrewMemberById(id);
-        crewMember.getFlights().forEach(flight -> flight.getCrew().remove(crewMember));
-        crewMemberRepo.delete(crewMember);
+        CrewMember crewMemberToDelete = crewMemberRepository.findById(id).orElseThrow(() -> new CrewMemberNotFoundException(id));
+        crewMemberToDelete.getFlights().forEach(flight -> flight.getCrew().remove(crewMemberToDelete));
+        crewMemberRepository.delete(crewMemberToDelete);
     }
 
     @Transactional
-    public Flight addCrewMemberToFlight(Integer crewMemberId, Integer flightId) {
+    public FlightDto addCrewMemberToFlight(Integer crewMemberId, Integer flightId) {
         Flight flight;
         try {
             flight = restTemplate.getForObject("http://FLIGHT-SERVICE/flights/" + flightId, Flight.class);
         } catch (HttpClientErrorException e) {
             throw new FlightNotFoundException(flightId);
         }
-        CrewMember crewMember = getCrewMemberById(crewMemberId);
+        CrewMember crewMember = crewMemberRepository.findById(crewMemberId).orElseThrow(() -> new CrewMemberNotFoundException(crewMemberId));
         if (flight.getCrew().contains(crewMember))
             throw new CrewMemberIsAlreadyAssignedToFlightException(crewMemberId, flightId);
         crewMember.getFlights().add(flight);
         flight.getCrew().add(crewMember);
-        return flight;
+        return FlightMapper.toFlightDto(flight);
     }
 
     @Transactional
-    public Flight removeCrewMemberFromFlight(Integer crewMemberId, Integer flightId) {
+    public FlightDto removeCrewMemberFromFlight(Integer crewMemberId, Integer flightId) {
         Flight flight;
         try {
             flight = restTemplate.getForObject("http://FLIGHT-SERVICE/flights/" + flightId, Flight.class);
         } catch (HttpClientErrorException e) {
             throw new FlightNotFoundException(flightId);
         }
-        CrewMember crewMember = getCrewMemberById(crewMemberId);
+        CrewMember crewMember = crewMemberRepository.findById(crewMemberId).orElseThrow(() -> new CrewMemberNotFoundException(crewMemberId));
         crewMember.getFlights().remove(flight);
         flight.getCrew().remove(crewMember);
-        return flight;
+        return FlightMapper.toFlightDto(flight);
     }
 }

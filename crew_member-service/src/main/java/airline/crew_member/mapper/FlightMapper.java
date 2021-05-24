@@ -3,7 +3,6 @@ package airline.crew_member.mapper;
 import airline.crew_member.dto.FlightDto;
 import airline.crew_member.model.Flight;
 
-import java.util.HashSet;
 import java.util.stream.Collectors;
 
 public class FlightMapper {
