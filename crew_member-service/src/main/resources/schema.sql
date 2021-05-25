@@ -9,4 +9,4 @@ create table crew_member (
     role varchar(11),
     age integer,
     primary key (id)
-);
+) engine=InnoDB;

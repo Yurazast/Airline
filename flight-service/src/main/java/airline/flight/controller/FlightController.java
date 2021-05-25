@@ -17,7 +17,7 @@ public class FlightController {
 
     @GetMapping
     public ResponseEntity<List<FlightDto>> getAllFlights() {
-        List<FlightDto> flights = flightService.getAll();
+        List<FlightDto> flights = flightService.getAllFlights();
         return new ResponseEntity<>(flights, HttpStatus.OK);
     }
 

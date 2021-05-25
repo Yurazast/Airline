@@ -18,7 +18,7 @@ public class CrewMemberController {
 
     @GetMapping
     public ResponseEntity<List<CrewMemberDto>> getAllCrewMembers() {
-        List<CrewMemberDto> crewMembers = crewMemberService.getAll();
+        List<CrewMemberDto> crewMembers = crewMemberService.getAllCrewMembers();
         return new ResponseEntity<>(crewMembers, HttpStatus.OK);
     }
 
