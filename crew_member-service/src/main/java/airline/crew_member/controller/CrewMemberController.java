@@ -28,6 +28,18 @@ public class CrewMemberController {
         return new ResponseEntity<>(crewMemberById, HttpStatus.OK);
     }
 
+    @GetMapping("/surname/{surname}")
+    public ResponseEntity<CrewMemberDto> getCrewMemberBySurname(@PathVariable String surname) {
+        CrewMemberDto crewMemberBySurname = crewMemberService.getCrewMemberBySurname(surname);
+        return new ResponseEntity<>(crewMemberBySurname, HttpStatus.OK);
+    }
+
+    @GetMapping("/name/{name}")
+    public ResponseEntity<CrewMemberDto> getCrewMemberByName(@PathVariable String name) {
+        CrewMemberDto crewMemberByName = crewMemberService.getCrewMemberByName(name);
+        return new ResponseEntity<>(crewMemberByName, HttpStatus.OK);
+    }
+
     @PostMapping("/new")
     public ResponseEntity<CrewMemberDto> saveCrewMember(@RequestBody CrewMemberDto crewMemberDto) {
         CrewMemberDto savedCrewMember = crewMemberService.saveCrewMember(crewMemberDto);

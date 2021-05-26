@@ -25,6 +25,22 @@ public class FlightDaoImpl implements FlightDao {
         return Optional.ofNullable(entityManager.find(Flight.class, id));
     }
 
+    @Override
+    public Optional<Flight> getByDeparturePlace(String departurePlace) {
+        return entityManager
+                .createQuery("SELECT f FROM Flight f WHERE f.departurePlace = :departurePlace", Flight.class)
+                .setParameter("departurePlace", departurePlace)
+                .getResultList().stream().findFirst();
+    }
+
+    @Override
+    public Optional<Flight> getByArrivalPlace(String arrivalPlace) {
+        return entityManager
+                .createQuery("SELECT f FROM Flight f WHERE f.arrivalPlace = :arrivalPlace", Flight.class)
+                .setParameter("arrivalPlace", arrivalPlace)
+                .getResultList().stream().findFirst();
+    }
+
     @Transactional
     @Override
     public Flight save(Flight flight) {

@@ -27,6 +27,18 @@ public class FlightController {
         return new ResponseEntity<>(flightById, HttpStatus.OK);
     }
 
+    @GetMapping("/departure/{departurePlace}")
+    public ResponseEntity<FlightDto> getFlightByDeparturePlace(@PathVariable String departurePlace) {
+        FlightDto flightByDeparturePlace = flightService.getFlightByDeparturePlace(departurePlace);
+        return new ResponseEntity<>(flightByDeparturePlace, HttpStatus.OK);
+    }
+
+    @GetMapping("/arrival/{arrivalPlace}")
+    public ResponseEntity<FlightDto> getFlightByArrivalPlace(@PathVariable String arrivalPlace) {
+        FlightDto flightByArrivalPlace = flightService.getFlightByArrivalPlace(arrivalPlace);
+        return new ResponseEntity<>(flightByArrivalPlace, HttpStatus.OK);
+    }
+
     @PostMapping("/new")
     public ResponseEntity<FlightDto> saveFlight(@RequestBody FlightDto flightDto) {
         FlightDto savedFlight = flightService.saveFlight(flightDto);

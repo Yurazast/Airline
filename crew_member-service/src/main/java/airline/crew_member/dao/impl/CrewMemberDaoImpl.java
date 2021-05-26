@@ -25,6 +25,22 @@ public class CrewMemberDaoImpl implements CrewMemberDao {
         return Optional.ofNullable(entityManager.find(CrewMember.class, id));
     }
 
+    @Override
+    public Optional<CrewMember> getBySurname(String surname) {
+        return entityManager
+                .createQuery("SELECT cm FROM CrewMember cm WHERE cm.surname = :surname", CrewMember.class)
+                .setParameter("surname", surname)
+                .getResultList().stream().findFirst();
+    }
+
+    @Override
+    public Optional<CrewMember> getByName(String name) {
+        return entityManager
+                .createQuery("SELECT cm FROM CrewMember cm WHERE cm.name = :name", CrewMember.class)
+                .setParameter("name", name)
+                .getResultList().stream().findFirst();
+    }
+
     @Transactional
     @Override
     public CrewMember save(CrewMember crewMember) {

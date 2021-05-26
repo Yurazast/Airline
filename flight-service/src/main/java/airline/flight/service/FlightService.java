@@ -21,7 +21,17 @@ public class FlightService {
     }
 
     public FlightDto getFlightById(Integer id) {
-        return FlightMapper.toFlightDto(flightDao.getById(id).orElseThrow(() -> new FlightNotFoundException(id)));
+        return FlightMapper.toFlightDto(flightDao.getById(id).orElseThrow(() -> new FlightNotFoundException("id", id)));
+    }
+
+    public FlightDto getFlightByDeparturePlace(String departurePlace) {
+        return FlightMapper.toFlightDto(flightDao.getByDeparturePlace(departurePlace)
+                .orElseThrow(() -> new FlightNotFoundException("departurePlace", departurePlace)));
+    }
+
+    public FlightDto getFlightByArrivalPlace(String arrivalPlace) {
+        return FlightMapper.toFlightDto(flightDao.getByArrivalPlace(arrivalPlace)
+                .orElseThrow(() -> new FlightNotFoundException("arrivalPlace", arrivalPlace)));
     }
 
     public FlightDto saveFlight(FlightDto flightDto) {
@@ -40,7 +50,7 @@ public class FlightService {
     }
 
     public void deleteFlight(Integer id) {
-        Flight flightToDelete = flightDao.getById(id).orElseThrow(() -> new FlightNotFoundException(id));
+        Flight flightToDelete = flightDao.getById(id).orElseThrow(() -> new FlightNotFoundException("id", id));
         flightToDelete.getCrew().forEach(crewMember -> crewMember.getFlights().remove(flightToDelete));
         flightDao.delete(flightToDelete);
     }

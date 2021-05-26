@@ -7,7 +7,7 @@ import java.text.MessageFormat;
 
 @ResponseStatus(code = HttpStatus.NOT_FOUND)
 public class CrewMemberNotFoundException extends RuntimeException {
-    public CrewMemberNotFoundException(final Integer id) {
-        super(MessageFormat.format("Couldn't find crew member with id: {0}", id));
+    public <T> CrewMemberNotFoundException(final String attribute, final T value) {
+        super(MessageFormat.format("Couldn't find crew member with {0}: {1}", attribute, value));
     }
 }

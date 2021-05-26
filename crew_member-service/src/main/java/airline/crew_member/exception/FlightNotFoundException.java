@@ -7,7 +7,7 @@ import java.text.MessageFormat;
 
 @ResponseStatus(code = HttpStatus.NOT_FOUND)
 public class FlightNotFoundException extends RuntimeException {
-    public FlightNotFoundException(final Integer id) {
-        super(MessageFormat.format("Couldn't find flight with id: {0}", id));
+    public <T> FlightNotFoundException(final String attribute, final T value) {
+        super(MessageFormat.format("Couldn't find flight with {0}: {1}", attribute, value));
     }
 }

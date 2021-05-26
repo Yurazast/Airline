@@ -30,7 +30,18 @@ public class CrewMemberService {
     }
 
     public CrewMemberDto getCrewMemberById(Integer id) {
-        return CrewMemberMapper.toCrewMemberDto(crewMemberDao.getById(id).orElseThrow(() -> new CrewMemberNotFoundException(id)));
+        return CrewMemberMapper.toCrewMemberDto(crewMemberDao.getById(id)
+                .orElseThrow(() -> new CrewMemberNotFoundException("id", id)));
+    }
+
+    public CrewMemberDto getCrewMemberBySurname(String surname) {
+        return CrewMemberMapper.toCrewMemberDto(crewMemberDao.getBySurname(surname)
+                .orElseThrow(() -> new CrewMemberNotFoundException("surname", surname)));
+    }
+
+    public CrewMemberDto getCrewMemberByName(String name) {
+        return CrewMemberMapper.toCrewMemberDto(crewMemberDao.getByName(name)
+                .orElseThrow(() -> new CrewMemberNotFoundException("name", name)));
     }
 
     public CrewMemberDto saveCrewMember(CrewMemberDto crewMemberDto) {
@@ -49,7 +60,8 @@ public class CrewMemberService {
     }
 
     public void deleteCrewMember(Integer id) {
-        CrewMember crewMemberToDelete = crewMemberDao.getById(id).orElseThrow(() -> new CrewMemberNotFoundException(id));
+        CrewMember crewMemberToDelete = crewMemberDao.getById(id)
+                .orElseThrow(() -> new CrewMemberNotFoundException("id", id));
         crewMemberToDelete.getFlights().forEach(flight -> flight.getCrew().remove(crewMemberToDelete));
         crewMemberDao.delete(crewMemberToDelete);
     }
@@ -60,9 +72,10 @@ public class CrewMemberService {
         try {
             flight = restTemplate.getForObject("http://FLIGHT-SERVICE/flights/" + flightId, Flight.class);
         } catch (HttpClientErrorException e) {
-            throw new FlightNotFoundException(flightId);
+            throw new FlightNotFoundException("id", flightId);
         }
-        CrewMember crewMember = crewMemberDao.getById(crewMemberId).orElseThrow(() -> new CrewMemberNotFoundException(crewMemberId));
+        CrewMember crewMember = crewMemberDao.getById(crewMemberId)
+                .orElseThrow(() -> new CrewMemberNotFoundException("id", crewMemberId));
         if (flight.getCrew().contains(crewMember))
             throw new CrewMemberIsAlreadyAssignedToFlightException(crewMemberId, flightId);
         crewMember.getFlights().add(flight);
@@ -76,9 +89,10 @@ public class CrewMemberService {
         try {
             flight = restTemplate.getForObject("http://FLIGHT-SERVICE/flights/" + flightId, Flight.class);
         } catch (HttpClientErrorException e) {
-            throw new FlightNotFoundException(flightId);
+            throw new FlightNotFoundException("id", flightId);
         }
-        CrewMember crewMember = crewMemberDao.getById(crewMemberId).orElseThrow(() -> new CrewMemberNotFoundException(crewMemberId));
+        CrewMember crewMember = crewMemberDao.getById(crewMemberId)
+                .orElseThrow(() -> new CrewMemberNotFoundException("id", crewMemberId));
         crewMember.getFlights().remove(flight);
         flight.getCrew().remove(crewMember);
         return FlightMapper.toFlightDto(flight);
