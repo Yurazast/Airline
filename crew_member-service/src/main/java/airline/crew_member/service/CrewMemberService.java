@@ -11,6 +11,7 @@ import airline.crew_member.model.CrewMember;
 import airline.crew_member.model.Flight;
 import airline.crew_member.dao.CrewMemberDao;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
@@ -25,20 +26,24 @@ public class CrewMemberService {
     private final CrewMemberDao crewMemberDao;
     private final RestTemplate restTemplate;
 
+    @Cacheable(value = "crew")
     public List<CrewMemberDto> getAllCrewMembers() {
         return crewMemberDao.getAll().stream().map(CrewMemberMapper::toCrewMemberDto).collect(Collectors.toList());
     }
 
+    @Cacheable(value = "crew", key = "#id")
     public CrewMemberDto getCrewMemberById(Integer id) {
         return CrewMemberMapper.toCrewMemberDto(crewMemberDao.getById(id)
                 .orElseThrow(() -> new CrewMemberNotFoundException("id", id)));
     }
 
+    @Cacheable(value = "crew", key = "#surname")
     public CrewMemberDto getCrewMemberBySurname(String surname) {
         return CrewMemberMapper.toCrewMemberDto(crewMemberDao.getBySurname(surname)
                 .orElseThrow(() -> new CrewMemberNotFoundException("surname", surname)));
     }
 
+    @Cacheable(value = "crew", key = "#name")
     public CrewMemberDto getCrewMemberByName(String name) {
         return CrewMemberMapper.toCrewMemberDto(crewMemberDao.getByName(name)
                 .orElseThrow(() -> new CrewMemberNotFoundException("name", name)));
