@@ -1,0 +1,94 @@
+version: "3.7"
+services:
+  service-registry:
+    image: service-registry:0.0.1-SNAPSHOT
+    container_name: service-registry
+    build: service-registry
+    restart: on-failure
+    ports:
+      - 8761:8761
+    networks:
+      default:
+        ipv4_address: 172.18.0.4
+
+  cloud-gateway:
+    image: cloud-gateway:0.0.1-SNAPSHOT
+    container_name: cloud-gateway
+    build: cloud-gateway
+    depends_on:
+      - service-registry
+    restart: on-failure
+    ports:
+      - 8080:8080
+    networks:
+      default:
+        ipv4_address: 172.18.0.5
+
+  crew_member-service:
+    image: crew_member-service:0.0.1-SNAPSHOT
+    container_name: crew_member-service
+    build: crew_member-service
+    depends_on:
+      - service-registry
+      - cloud-gateway
+      - db
+      - redis
+    environment:
+      - MYSQL_DB=${MYSQL_DB}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASS=${MYSQL_PASS}
+    restart: on-failure
+    ports:
+      - 8081:8081
+    networks:
+      default:
+        ipv4_address: 172.18.0.6
+
+  flight-service:
+    image: flight-service:0.0.1-SNAPSHOT
+    container_name: flight-service
+    build: flight-service
+    depends_on:
+      - service-registry
+      - cloud-gateway
+      - db
+      - redis
+    environment:
+      - MYSQL_DB=${MYSQL_DB}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASS=${MYSQL_PASS}
+    restart: on-failure
+    ports:
+      - 8082:8082
+    networks:
+      default:
+        ipv4_address: 172.18.0.7
+
+  db:
+    image: mysql:8.0
+    container_name: mysql
+    restart: on-failure
+    ports:
+      - 3306:3306
+    networks:
+      default:
+        ipv4_address: 172.18.0.2
+
+  redis:
+    image: redis:5.0
+    container_name: redis
+    restart: on-failure
+    ports:
+      - 6379:6379
+    networks:
+      default:
+        ipv4_address: 172.18.0.3
+
+networks:
+  default:
+    external: true
+    name: airline_default
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.18.0.0/16
