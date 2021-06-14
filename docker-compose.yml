@@ -1,7 +1,7 @@
 version: "3.7"
 services:
   service-registry:
-    image: service-registry:0.0.1-SNAPSHOT
+    image: service-registry:0.0.1
     container_name: service-registry
     build: service-registry
     restart: on-failure
@@ -12,7 +12,7 @@ services:
         ipv4_address: 172.18.0.4
 
   cloud-gateway:
-    image: cloud-gateway:0.0.1-SNAPSHOT
+    image: cloud-gateway:0.0.1
     container_name: cloud-gateway
     build: cloud-gateway
     depends_on:
@@ -25,7 +25,7 @@ services:
         ipv4_address: 172.18.0.5
 
   crew_member-service:
-    image: crew_member-service:0.0.1-SNAPSHOT
+    image: crew_member-service:0.0.1
     container_name: crew_member-service
     build: crew_member-service
     depends_on:
@@ -45,7 +45,7 @@ services:
         ipv4_address: 172.18.0.6
 
   flight-service:
-    image: flight-service:0.0.1-SNAPSHOT
+    image: flight-service:0.0.1
     container_name: flight-service
     build: flight-service
     depends_on:
@@ -70,6 +70,8 @@ services:
     restart: on-failure
     ports:
       - 3306:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASS}
     networks:
       default:
         ipv4_address: 172.18.0.2

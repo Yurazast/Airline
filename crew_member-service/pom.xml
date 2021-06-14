@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>airline</groupId>
 	<artifactId>crew_member-service</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1</version>
 	<name>crew_member-service</name>
 	<description>crew_member-service</description>
 	<properties>

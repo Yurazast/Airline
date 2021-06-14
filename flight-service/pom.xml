@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>airline</groupId>
 	<artifactId>flight-service</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1</version>
 	<name>flight-service</name>
 	<description>flight-service</description>
 	<properties>
